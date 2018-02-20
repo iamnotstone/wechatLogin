@@ -1,0 +1,18 @@
+body {
+    font-family:'HelveticaNeue-Light', 'HelveticaNeue', Helvetica, Arial, sans-serif;
+    font-size:16px;
+    height:100%;
+    margin:0px;
+    padding:0px;
+    text-transform:uppercase;
+    width:100%;
+}
+
+hr {
+  margin: -1px 8px 0px 8px;
+  border-bottom: 0px;
+  border-left: 0px;
+  border-right: 0px;
+  border-color: #ffffff;
+  height: 1px;
+}
