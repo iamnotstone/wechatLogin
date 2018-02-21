@@ -1,0 +1,1 @@
+export const WECHAT_LOGIN = 'WECHAT_LOGIN'

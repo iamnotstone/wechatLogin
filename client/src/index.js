@@ -4,8 +4,11 @@ import {createStore, applyMiddleware} from 'redux'
 import {Provider} from 'react-redux'
 import reducer from './reducers'
 import User from './components/user'
+import wechatMiddleware from './middleware/wechatMiddleware'
 
-var store = createStore(reducer, {isAuth: false})
+var store = createStore(reducer, {isAuth: false}, 
+    applyMiddleware(wechatMiddleware)
+  )
 
 render(
   <Provider store = {store}>
