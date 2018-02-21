@@ -1,32 +1,52 @@
 'use strict'
 var LocalStrategy = require('passport-local'),
   mongoose = require('mongoose'),
-	users = mongoose.model('users')
-
+	users = mongoose.model('users'),
+  WechatStrategy = require('passport-wechat'),
+  debug = require('debug')('wechat-passport')
 exports.configPassport = function(passport){
 
-  passport.use(new LocalStrategy(
-    function(username, password, done) {
-      users.findOne({ username: username }, function(err, user) {
-        if (err) { return done(err); }
-        if (!user) {
-          return done(null, false, { message: 'Incorrect username.' });
-        }
-        if (!user.validPassword(password)) {
-          return done(null, false, { message: 'Incorrect password.' });
-        }
-        return done(null, user);
-      });
-    }
-  ));
+  getToken = function(){
+    debug('getToken')
+  }
 
+  saveToken = function(){
+    debug('saveToken')
+  }
+
+  passport.use(
+    'wechat',
+    new WechatStrategy(
+      {
+        appID: 'APPID',
+        name:'wechat',
+        appSecret: 'APPSECRET',
+        client: 'shooter',
+        callbackURL: '/auth/wechat/callback',
+        scope: 'snsapi_userinfo',
+        state: '123',
+        getToken: getToken,
+        saveToken: saveToken
+      },
+      function(accessToken, refreshToken, profile, done) {
+        debug('profile:', profile)
+        users.findOrCreate({username: 'username'}, {profile: 'profile'}, function(err, result){
+          if(err) debug('findOrCreate.err:', err)
+          else debug('findOrCreate.result:', result)
+          done(err, result)
+        })
+      }
+    )
+  );
 
   passport.serializeUser(function(user, done) {
     done(null, user.username);
   });
  
   passport.deserializeUser(function(id, done) {
-    done(null, {username:id});
+    users.findOne({username:id}, function(err, user){
+      done(err, user)
+    })
   });
 }
 
