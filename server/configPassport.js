@@ -30,7 +30,7 @@ exports.configPassport = function(passport){
       },
       function(accessToken, refreshToken, profile, done) {
         debug('profile:', profile)
-        users.findOrCreate({username: 'username'}, {profile: 'profile'}, function(err, result){
+        users.findOrCreate({userId: 'userId'}, {profile: 'profile'}, function(err, result){
           if(err) debug('findOrCreate.err:', err)
           else debug('findOrCreate.result:', result)
           done(err, result)
@@ -40,11 +40,11 @@ exports.configPassport = function(passport){
   );
 
   passport.serializeUser(function(user, done) {
-    done(null, user.username);
+    done(null, user.userId);
   });
  
   passport.deserializeUser(function(id, done) {
-    users.findOne({username:id}, function(err, user){
+    users.findOne({userId: id}, function(err, user){
       done(err, user)
     })
   });
