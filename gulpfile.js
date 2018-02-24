@@ -23,8 +23,12 @@ gulp.task('build',function(callback){
 	runSequence('clean',['transpile'],callback)
 })
 
+gulp.task('android-release', shell.task([
+  'cd client && cordova run android --release --buildConfig && cd ../'
+]))
+
 gulp.task('android',shell.task([
-  'cd client && cordova run android && cd ../'
+  'cd client && cordova run android --buildConfig && cd ../'
 ]))
 
 

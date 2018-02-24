@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.tuoputuo.wechatLogin" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>wechatLogin</name>
+<widget id="com.tuoputuo.shootWolf" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>射一射</name>
     <description>
         A sample Apache Cordova application that responds to the deviceready event.
     </description>
@@ -27,5 +27,8 @@
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />
     </platform>
+    <plugin name="cordova-plugin-wechat" spec="^2.1.0">
+        <variable name="WECHATAPPID" value="wx5e2f1ef5e4b57376" />
+    </plugin>
     <engine name="android" spec="^7.0.0" />
 </widget>
