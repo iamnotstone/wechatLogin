@@ -10,7 +10,6 @@ class ItemBarButton extends React.Component{
 
   constructor(props){
     super(props)
-    this.onClick = this.onClick.bind(this)
     this.onTouchStart = this.onTouchStart.bind(this)
     this.onTouchEnd = this.onTouchEnd.bind(this)
     this.state = {
@@ -18,9 +17,6 @@ class ItemBarButton extends React.Component{
     }
   }
 
-  onClick(){
-    this.props.onClick()
-  }
 
   onTouchStart(e){
     e.preventDefault()
@@ -31,9 +27,11 @@ class ItemBarButton extends React.Component{
 
   onTouchEnd(e){
     e.preventDefault()
+    //console.log('node:', this.node)
     this.setState({
       nodeColor: 'white'
     })
+    this.props.onClick()
   }
 
   onTouchMove(e){
@@ -43,14 +41,12 @@ class ItemBarButton extends React.Component{
   componentDidMount(){
     this.node.addEventListener('touchstart', this.onTouchStart)
     this.node.addEventListener('touchend', this.onTouchEnd)
-    this.node.addEventListener('click', this.onClick)
     this.node.addEventListener('touchmove', this.onTouchMove)
   }
 
   componentWillUnmount(){
     this.node.removeEventListener('touchstart', this.onTouchStart)
     this.node.removeEventListener('touchend', this.onTouchEnd)
-    this.node.removeEventListener('click', this.onClick)
     this.node.removeEventListener('touchmove', this.onTouchMove)
   }
 

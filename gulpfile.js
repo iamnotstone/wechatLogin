@@ -31,4 +31,7 @@ gulp.task('android',shell.task([
   'cd client && cordova run android --buildConfig && cd ../'
 ]))
 
+gulp.task('server-debug',shell.task([
+  'DEBUG=app:* nodemon --watch ./server ./server/server.js'
+]))
 

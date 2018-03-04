@@ -1,20 +1,24 @@
 import React from 'react'
-import ItemBarButton from './itemBarButton'
-import ItemBarContent from './itemBarContent'
+//import ItemBarButton from './itemBarButton'
+//import ItemBarContent from './itemBarContent'
+import {ItemBarButton, ItemBarContent} from 'react-tuo-mobile-components'
+import {wechatLogin, logout} from '../actions/index'
+import {connect} from 'react-redux'
 
-class User extends React.Component{
+class UserComp extends React.Component{
   constructor(props){
     super(props)
     this.wechatLogin = this.wechatLogin.bind(this)
-    this.nameClick = this.nameClick.bind(this)
+    this.logout = this.logout.bind(this)
   }
+
 
   wechatLogin(){
-
+    this.props.wechatLogin()
   }
 
-  nameClick(){
-
+  logout(){
+    this.props.logout()
   }
 
   render(){
@@ -26,11 +30,33 @@ class User extends React.Component{
         paddingTop: '8px'
       }}
     >
-      <ItemBarButton title = "微信登陆" onClick = {this.wechatLogin}/>
-
-      <ItemBarContent label = "昵称" content = "足知足不知" onClick = {this.nameClick}/>
+      {
+        this.props.isAuth ? 
+        <div>
+          <ItemBarContent 
+            label = {this.props.userInfo.nickName}
+            content = {this.props.userInfo.headimgurl}
+            contentType = 'icon'
+          />
+          <hr/>
+          <ItemBarButton title = "注销登录" onClick = {this.logout} />
+        </div> :
+        <ItemBarButton title = "微信登陆" onClick = {this.wechatLogin} /> 
+      }
     </div>
   }
 }
+
+const mapStateToProps = (state) => ({
+  isAuth: state.isAuth,
+  userInfo: state.userInfo
+})
+
+const mapDispatchToProps = (dispatch) => ({
+  wechatLogin: () => dispatch(wechatLogin()),
+  logout: () => dispatch(logout())
+})
+
+const User = connect(mapStateToProps, mapDispatchToProps)(UserComp)
 
 export default User

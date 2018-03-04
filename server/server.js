@@ -1,42 +1,35 @@
 var express = require('express'),
-  app = express(),
-  port = process.env.PORT || 3000,
   mongoose = require('mongoose'),
   bodyParser = require('body-parser'),
 	cookieParser = require('cookie-parser'),
-  session = require('express-session'),
-	passport = require('passport'),
+  session = require('./session'),
   compression = require('compression'),
   helmet = require('helmet'),
   fs = require('fs'),
-  debug = require('debug')('server')
-
-//  var http = require('http').Server(app)
-
-var users = require('./api/models/UsersModel')
+  config = require('config-lite')(__dirname),
+  debug = require('debug')('app:server')
+  db = require('./api/mongodb/db')
 
 
-
-mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://localhost/wechatlogin');
-
+var app = express(),
+    port = process.env.PORT || 3000
 
 app.use(helmet())
 app.use(compression())
 app.use(cookieParser())
 app.use(bodyParser.urlencoded({extended: false}))
 app.use(bodyParser.json())
-app.use(session({secret:'supernova', saveUninitialized: true, resave: true}))
-app.use(passport.initialize())
-app.use(passport.session())
+//app.use(session())
 
 //config passport
 var configPassport = require('./configPassport')
-configPassport.configPassport(passport)
+var passport = configPassport(app)
 
-var routes = require('./api/routes/routes');
+var routes = require('./api/routes/index');
 routes(app, passport);
 
-
+app.listen(config.port, function(){
+  debug('start listen port', config.port)
+})
 
 

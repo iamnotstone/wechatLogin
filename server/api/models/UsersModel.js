@@ -2,18 +2,34 @@
 
 var mongoose = require('mongoose')
 var Schema = mongoose.Schema
-const findOrCreate = require('mongoose-find-or-create')
+var autoIncrement = require('mongoose-auto-increment')
+
 var UserSchema = new Schema({
-  userName: String,
-	userId: String,
+  nickName: String,
+	openId: String,
   userGroup: {
     type: String,
     default: 'User' // {User|Manager}
   },
-  registrationTime: Date
+  sex: Number,
+  openIdSrc: String,
+  language: String,
+  city: String,
+  province: String,
+  country: String,
+  headimgurl: String,
+  privilege: [String],
+  unionid: String,
+  registrationTime: Date,
+  userId: String,
 })
 
-UserSchema.plugin(findOrCreate)
+
+UserSchema.plugin(autoIncrement.plugin, {
+  model: 'users',
+  field: 'userId'
+})
+
 
 
 module.exports = mongoose.model('users', UserSchema)

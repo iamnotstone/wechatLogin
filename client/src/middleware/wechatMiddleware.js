@@ -1,7 +1,8 @@
 import {WECHAT_LOGIN} from '../actions/actionTypes'
 import fetch from 'isomorphic-fetch'
+import {loginSuccess} from '../actions/index'
 
-var baseUrl = '192.168.0.2:8080'
+var baseUrl = 'http://192.168.0.2:8001'
 
 const wechatMiddleware = store => next => action => {
   if(action.type == WECHAT_LOGIN){
@@ -9,7 +10,7 @@ const wechatMiddleware = store => next => action => {
     state = "_" + (+new Date());
     Wechat.auth(scope, state, function (response) {
     // you may use response.code to get the access token.
-      alert(JSON.stringify(response));
+      console.log('respose:', response)
       //fetch get /auth/wechat/callback code ...
       let config = {
         method: 'GET',
@@ -20,13 +21,14 @@ const wechatMiddleware = store => next => action => {
       let url = baseUrl + '/auth/wechat/callback?' + 'code=' + response.code 
         + '&state=' + state
       fetch(url, config)
-        .then(res => {
-          console.log(res.json())
+        .then(res => res.json())
+        .then(json => {
+          if(json.loginResult === true)
+            store.dispatch(loginSuccess(json.userInfo))
         })
     }, function (reason) {
-      alert("Failed: " + reason);
+      alert('failed')
     });
-
   }
   else
     next(action)

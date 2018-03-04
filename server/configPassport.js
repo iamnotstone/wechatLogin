@@ -1,26 +1,38 @@
 'use strict'
-var LocalStrategy = require('passport-local'),
+var passport = require('passport'),
+//  LocalStrategy = require('passport-local'),
   mongoose = require('mongoose'),
-	users = mongoose.model('users'),
+	//users = mongoose.model('users'),
+	users = require('./api/models/UsersModel'),
+  wechatToken = require('./api/models/WechatToken'),
   WechatStrategy = require('passport-wechat'),
-  debug = require('debug')('wechat-passport')
-exports.configPassport = function(passport){
+  debug = require('debug')('app:wechat-passport'),
+  config = require('config-lite')(__dirname)
 
-  getToken = function(){
-    debug('getToken')
+module.exports = function(app){
+  app.use(passport.initialize())
+  //app.use(passport.session())
+
+  var getToken = function(openid, callback){
+    wechatToken.findOne({openid:openid}, function(err, result){
+      callback(err, result)
+    })
   }
 
-  saveToken = function(){
-    debug('saveToken')
+  var saveToken = function(openid, token, callback){
+    wechatToken.update({openid: openid}, token, {upsert: true}, 
+      function(err){
+        callback(err) 
+      })
   }
 
   passport.use(
     'wechat',
     new WechatStrategy(
       {
-        appID: 'APPID',
+        appID: config.appID,
         name:'wechat',
-        appSecret: 'APPSECRET',
+        appSecret: config.appSecret,
         client: 'shooter',
         callbackURL: '/auth/wechat/callback',
         scope: 'snsapi_userinfo',
@@ -28,12 +40,33 @@ exports.configPassport = function(passport){
         getToken: getToken,
         saveToken: saveToken
       },
-      function(accessToken, refreshToken, profile, done) {
-        debug('profile:', profile)
-        users.findOrCreate({userId: 'userId'}, {profile: 'profile'}, function(err, result){
-          if(err) debug('findOrCreate.err:', err)
-          else debug('findOrCreate.result:', result)
-          done(err, result)
+      function(accessToken, refreshToken, profile, expire_in, done) {
+        users.findOne({openIdSrc: 'wechat', openId: profile.openid}, 
+          function(err, result){
+            if(err) return done(err)
+            else{
+              if(result) done(null, result)
+              else{
+                var d = new Date()
+                var newUser = new users( {
+                  nickName: profile.nickname,
+                  openId: profile.openid,
+                  openIdSrc: 'wechat',
+                  sex: profile.sex,
+                  language: profile.language,
+                  city: profile.city,
+                  province: profile.province,
+                  country: profile.country,
+                  headimgurl: profile.headimgurl,
+                  privilege: profile.privilege,
+                  unionid: profile.unionid,
+                  registrationTime: d
+                })
+                newUser.save(function(err, result){
+                  done(err, result)
+                })
+              }
+            }
         })
       }
     )
@@ -48,5 +81,7 @@ exports.configPassport = function(passport){
       done(err, user)
     })
   });
+
+  return passport
 }
 
